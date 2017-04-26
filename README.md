@@ -1,4 +1,4 @@
-# Some Use Cases (may not be the same syntax)
+# Python with pattern matching
 
 ## If none of the cases matches, it will throw an exception. We may want match to be an expression but not a statement.
 
@@ -65,3 +65,22 @@ Symbol | Meaning | Meaning | Symbol
 *  'compound_stmt' contains all of the long statments, including if statement and all the loops
 *  'suite' can be any 'simple_stmt' or a line of any statement
 *  'exprlist', 'testlist' contians bunch of expr or test
+
+# Note on Parse Trees
+
+## Important functions in Python/ast.c
+* CHILD(node *, int):    Returns the nth child of the node using zero-offset indexing
+* RCHILD(node *, int):   Returns the nth child of the node from the right side; use negative numbers!
+* NCH(node *): 		 Number of children the node has
+* STR(node *):           String representation of the node; e.g., will return : for a COLON token
+* TYPE(node *):          The type of node as specified in Include/graminit.h
+* REQ(node *, TYPE):     Assert that the node is the type that is expected
+* LINENO(node *):        retrieve the line number of the source code that led to the creation of the parse rule; defined in Python/ast.c
+* asdl_seq_SET:          set the node to become a node it created
+
+## Examples
+
+while_stmt: 'while' test ':' suite ['else' ':' suite]
+* TYPE(node) == while_stmt
+* number of children can be 4 or 7 depending on whether there is an ‘else’ statement
+* REQ(CHILD(node, 2), COLON) can be used to access what should be the first : and require it be an actual : token
