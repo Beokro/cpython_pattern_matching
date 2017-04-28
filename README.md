@@ -28,7 +28,8 @@
 
 ## Grammar/Frammar
 	// somehow keyword 'match' will cause the compile error, not sure why but I will use pmatch instead
-	match_stmt: 'pmatch' exprlist ':' 'with' or_test ':' expr ( 'with' or_test ':' expr )*
+  // start with something simple, match expr instead of exprlist
+	match_stmt: 'pmatch' expr ':' 'with' or_test ':' expr ('with' or_test ':' expr)*
 
 Note on pypy grammer
 =====================
@@ -84,3 +85,10 @@ while_stmt: 'while' test ':' suite ['else' ':' suite]
 * TYPE(node) == while_stmt
 * number of children can be 4 or 7 depending on whether there is an ‘else’ statement
 * REQ(CHILD(node, 2), COLON) can be used to access what should be the first : and require it be an actual : token
+
+# How to handle Grammar contains '*'
+
+* use NCH( const node* n ) to determine the number of chiild and number of time that ( xxx ) * repeated itself, sset it to x
+* use asdl_seq_new to create a container seq that will hold x elements
+* use asdl_seq_set to set each element in seq
+* return the node

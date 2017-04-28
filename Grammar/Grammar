@@ -66,7 +66,7 @@ compound_stmt: if_stmt | while_stmt | for_stmt | try_stmt | with_stmt | funcdef 
 if_stmt: 'if' test ':' suite ('elif' test ':' suite)* ['else' ':' suite]
 while_stmt: 'while' test ':' suite ['else' ':' suite]
 for_stmt: 'for' exprlist 'in' testlist ':' suite ['else' ':' suite]
-match_stmt: 'pmatch' exprlist ':' 'with' or_test ':' expr ('with' or_test ':' expr)*
+match_stmt: 'pmatch' expr ':' 'with' or_test ':' expr ('with' or_test ':' expr)*
 try_stmt: ('try' ':' suite
            ((except_clause ':' suite)+
             ['else' ':' suite]
