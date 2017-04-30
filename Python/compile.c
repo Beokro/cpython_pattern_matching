@@ -2131,6 +2131,8 @@ compiler_visit_stmt(struct compiler *c, stmt_ty s)
         return compiler_for(c, s);
     case While_kind:
         return compiler_while(c, s);
+    case Match_kind:
+        return compiler_match( c, s );
     case If_kind:
         return compiler_if(c, s);
     case Raise_kind:
