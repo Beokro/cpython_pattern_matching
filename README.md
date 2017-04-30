@@ -93,9 +93,6 @@ while_stmt: 'while' test ':' suite ['else' ':' suite]
 * use asdl_seq_set to set each element in seq
 * return the node
 
-# How to write the compiler function compiler_xxx
-
-* the argument will be ( struct compiler *c, stmt_ty s ), use s->v.xxx. to access the children of this node
 
 # Note on Code generation
 
@@ -118,3 +115,6 @@ while_stmt: 'while' test ':' suite ['else' ':' suite]
 * NEW_BLOCK() - create block and set it as current
 * NEXT_BLOCK() - basically NEW_BLOCK() plus jump from current block
 * compiler_new_block() - create a block but don’t use it (used for generating jumps)
+* compiler_use_next_block(struct compiler *c, basicblock *block) - set the block to be current block
+* compiler_push_fblock(struct compiler *c, enum fblocktype t, basicblock *b) - push a block to compiler, if too mnay block will return 0, otherwise return 1
+* compiler_pop_fblock(struct compiler *c, enum fblocktype t, basicblock *b) - similar to previous one, but pop the block instead
