@@ -92,3 +92,29 @@ while_stmt: 'while' test ':' suite ['else' ':' suite]
 * use asdl_seq_new to create a container seq that will hold x elements
 * use asdl_seq_set to set each element in seq
 * return the node
+
+# How to write the compiler function compiler_xxx
+
+* the argument will be ( struct compiler *c, stmt_ty s ), use s->v.xxx. to access the children of this node
+
+# Note on Code generation
+
+* we are dealing with AST to CFG( control flow graph ). CFG have basic blocks that contain the intermediate representation
+* Basic blocks themselves are a block of IR that has a single entry point but possibly multiple exit points.
+* Code is directly generated from the basic blocks
+* From blocks to bytecode, first creates the namespace and then pass essentially flattens the CFG into a list and calculates jump offsets for final output of bytecode.
+* each node type will have a function named compiler_visit_xx where xx is the name of the node type
+* Each function receives a struct compiler * and xx_ty where xx is the AST node type.
+
+## opcode realted methods
+* ADDOP() - add a specified opcode
+* ADDOP_I() - add an opcode that takes an argument
+* ADDOP_O(struct compiler *c, int op, PyObject *type, PyObject *obj) - add an opcode with the proper argument based on the position of the specified PyObject in PyObject sequence object, but with no handling of mangled names; used for when you need to do named lookups of objects such as globals, consts, or parameters where name mangling is not possible and the scope of the name is known
+* ADDOP_NAME() - just like ADDOP_O, but name mangling is also handled; used for attribute loading or importing based on name
+* ADDOP_JABS() - create an absolute jump to a basic block
+* ADDOP_JREL() - create a relative jump to a basic block
+
+## block related methods
+* NEW_BLOCK() - create block and set it as current
+* NEXT_BLOCK() - basically NEW_BLOCK() plus jump from current block
+* compiler_new_block() - create a block but don’t use it (used for generating jumps)
