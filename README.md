@@ -118,3 +118,15 @@ while_stmt: 'while' test ':' suite ['else' ':' suite]
 * compiler_use_next_block(struct compiler *c, basicblock *block) - set the block to be current block
 * compiler_push_fblock(struct compiler *c, enum fblocktype t, basicblock *b) - push a block to compiler, if too mnay block will return 0, otherwise return 1
 * compiler_pop_fblock(struct compiler *c, enum fblocktype t, basicblock *b) - similar to previous one, but pop the block instead
+
+## take a look at compiler_if
+* create two block 'end' and 'next', initialize next as a new block
+* use expr_constant to check the if test. If value is 0, visit else. If value if 1, visit if body
+* if value is negative
+  * if contains else, initalize next to be a new block, otherwise set it to end
+  * visit test. If test value is false jump to next
+  * visit if body. Jump to end
+  * visit else
+* set current block to end, which is a empty new block
+
+
