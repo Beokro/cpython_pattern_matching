@@ -31,6 +31,20 @@
   // start with something simple, match expr instead of exprlist
 	match_stmt: 'pmatch' expr ':' 'with' or_test ':' expr ('with' or_test ':' expr)*
 
+## AST
+
+   for now, create multiple comparsion and return value pair.  in Parser/Python.asdl add
+   Match(Compare* com, Expr* expr)
+
+   asdl_int_seq *ops = asdl_int_seq_new(1, c->c_arena);
+   expr_ty expression = ast_for_expr(c, CHILD(n, 0));
+   asdl_seq * cmps = asdl_seq_new(1, c->c_arena);
+
+   asdl_seq_SET(ops, 0, Eq);
+   asdl_seq_SET(cmps, 0, expression);    
+   Compare(expression, ops, cmps, LINENO(n),
+           n->n_col_offset, c->c_arena);  
+
 Note on pypy grammer
 =====================
 *  file directory: pypy / pypy / interpreter / pyparser / data / Grammar2.7

@@ -2951,64 +2951,69 @@ ast_for_while_stmt(struct compiling *c, const node *n)
 static stmt_ty
 ast_for_match_stmt(struct compiling *c, const node *n)
 {
-    //  match_stmt: 'pmatch' expr ':' 'with' or_test ':' expr ('with' or_test ':' expr)*
-    /*  while_stmt: 'while' test ':' suite ['else' ':' suite] */
+      //  match_stmt: 'pmatch' expr ':' 'with' or_test ':' expr ('with' or_test ':' expr)*
       REQ(n, match_stmt);
-      expr_ty expression;
-      asdl_seq *expr_seq1;
-      asdl_seq *expr_seq2;
+      // used to create Match
+      asdl_seq * tests;
+      asdl_seq * returns;
+      // used to create Compare
+      asdl_int_seq *ops;
+      expr_ty returnval;
+      expr_ty expr1;
+      expr_ty expr2;
+      asdl_seq * cmps;
+      // temp storage
       expr_ty temp;
+      int numOfComp;
       int i;
 
       if (NCH(n) == 7) {
-          // if length of match is 7, there is only one test and one return
-          expression = ast_for_expr(c, CHILD(n, 1));
-          if (!expression)
-              return NULL;
+          // one test and one return
+          tests = asdl_int_seq_new(1, c->c_arena);
+          returns = asdl_int_seq_new(1, c->c_arena);
+          returnval = ast_for_expr(c, CHILD(n, 6));
+          asdl_seq_SET(returns, 0, returnval);
 
-          // seq for or test
-          expr_seq1 = asdl_seq_new(1, c->c_arena);
-          temp = ast_for_expr(c, CHILD(n, 4));
-          if (!temp)
-              return NULL;
-          asdl_seq_SET(expr_seq1, 0, temp);
+          // only need to create one Compare ast
+          ops = asdl_int_seq_new(1, c->c_arena);
+          expr1 = ast_for_expr(c, CHILD(n, 1));
+          expr2 = ast_for_expr(c, CHILD(n, 4));
+          cmps = asdl_seq_new(1, c->c_arena);
+          asdl_seq_SET(ops, 0, Eq);
+          asdl_seq_SET(cmps, 0, expr2);
+          temp = Compare(expr1, ops, cmps, LINENO(n),
+                         n->n_col_offset, c->c_arena);
+          asdl_seq_SET(tests, 0, temp);
 
-          // seq for last expr
-          expr_seq2 = asdl_seq_new(1, c->c_arena);
-          temp = ast_for_expr(c, CHILD(n, 6));
-          if (!temp)
-              return NULL;
-          asdl_seq_SET(expr_seq2, 0, temp);
-
-          return Match(expression, expr_seq1, expr_seq2, LINENO(n), n->n_col_offset,
+          return Match(tests, returns, LINENO(n), n->n_col_offset,
                        c->c_arena);
       }
       else if (NCH(n) > 7) {
-          expression = ast_for_expr(c, CHILD(n, 1));
-          if (!expression)
-              return NULL;
+        // caculate the number of tests it will be
+        numOfComp = 1 + ( NCH(n) - 7 ) / 4;
+        tests = asdl_int_seq_new(numOfComp, c->c_arena);
+        returns = asdl_int_seq_new(numOfComp, c->c_arena);
 
-          expr_seq1 = asdl_seq_new((NCH(n) - 3) / 4, c->c_arena);
-          expr_seq2 = asdl_seq_new((NCH(n) - 3) / 4, c->c_arena);
+        // operator is always Equal and the left side of comparsion is
+        // always the expr follows pmatch. right side of comparsion always
+        // have size 1( fow now )
+        ops = asdl_int_seq_new(1, c->c_arena);
+        expr1 = ast_for_expr(c, CHILD(n, 1));
+        cmps = asdl_seq_new(1, c->c_arena);
+        asdl_seq_SET(ops, 0, Eq);
+        for( i = 4; i < NCH(n); i += 4 ) {
+          expr2 = ast_for_expr(c, CHILD(n, i));
+          asdl_seq_SET(cmps, 0, expr2);
+          temp = Compare(expr1, ops, cmps, LINENO(n),
+                         n->n_col_offset, c->c_arena);
+          asdl_seq_SET(tests, i, temp);
 
-          for (i = 4; i < NCH(n); i+=4){
-              // seq for or test
-              temp = ast_for_expr(c, CHILD(n, i));
-              if (!temp)
-                  return NULL;
-              asdl_seq_SET(expr_seq1, (i - 4) / 4, temp);
-
-              // seq for last expr
-              temp = ast_for_expr(c, CHILD(n, i + 2));
-              if (!temp)
-                  return NULL;
-              asdl_seq_SET(expr_seq2, (i - 4) / 4, temp);
-              return Match(expression, expr_seq1, expr_seq2, LINENO(n), n->n_col_offset,
-                           c->c_arena);
-          }
-
-          return Match(expression, expr_seq1, expr_seq2, LINENO(n), n->n_col_offset,
-                       c->c_arena);
+          // set return val for this this test
+          returnval = ast_for_expr(c, CHILD(n, i + 2));
+          asdl_seq_SET(returns, i, returnval);
+        }
+        return Match(tests, returns, LINENO(n), n->n_col_offset,
+                     c->c_arena);
       }
 
       PyErr_Format(PyExc_SystemError,
