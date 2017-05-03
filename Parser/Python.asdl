@@ -24,7 +24,7 @@ module Python version "$Revision$"
 	      -- use 'orelse' because else is a keyword in target languages
 	      | For(expr target, expr iter, stmt* body, stmt* orelse)
 	      | While(expr test, stmt* body, stmt* orelse)
-        | Match(expr* tests, expr* expr)
+        | Match(expr* tests, expr* returns)
 	      | If(expr test, stmt* body, stmt* orelse)
 	      | With(expr context_expr, expr? optional_vars, stmt* body)
 
