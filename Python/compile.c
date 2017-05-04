@@ -1705,6 +1705,36 @@ compiler_while(struct compiler *c, stmt_ty s)
     return 1;
 }
 
+
+static int
+compiler_match(struct compiler *c, stmt_ty s)
+{
+    basicblock *end, *next;
+    int totalLen = asdl_seq_LEN(s->v.Match.tests);
+    int i = 0;
+
+    // create a new block for end
+    end = compiler_new_block(c);
+    if (end == NULL)
+        return 0;
+
+    for (i = 0; i <totalLen; i++ ) {
+        // since there are more tests and returns pair, create one more block
+        next = compiler_new_block(c);
+        if (next == NULL)
+          return 0;
+        VISIT(c, expr, asdl_seq_GET(s->v.Match.tests, i));
+        ADDOP_JABS(c, POP_JUMP_IF_FALSE, next);
+        VISIT(c, expr, asdl_seq_GET(s->v.Match.returns, i));
+        ADDOP_JREL(c, JUMP_FORWARD, end);
+        compiler_use_next_block(c, next);
+    }
+    compiler_use_next_block(c, end);
+
+    return 1;
+}
+
+
 static int
 compiler_continue(struct compiler *c)
 {

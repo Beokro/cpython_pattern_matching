@@ -33,8 +33,8 @@
 
 ## AST
 
-   for now, create multiple comparsion and return value pair.  in Parser/Python.asdl add
-   Match(Compare* com, Expr* expr)
+* for now, create multiple comparsion and return value pair.  in Parser/Python.asdl add
+* Match(Expr* tests, Expr* returns)
 
    asdl_int_seq *ops = asdl_int_seq_new(1, c->c_arena);
    expr_ty expression = ast_for_expr(c, CHILD(n, 0));
@@ -43,7 +43,15 @@
    asdl_seq_SET(ops, 0, Eq);
    asdl_seq_SET(cmps, 0, expression);    
    Compare(expression, ops, cmps, LINENO(n),
-           n->n_col_offset, c->c_arena);  
+           n->n_col_offset, c->c_arena);
+
+## Compiler
+
+* Based on Match(Expr* tests, Expr* returns), Match node contains equal number of tests and return values
+* visit test and return in pairs. call Visit function on both
+* use asdl_seq_LEN to determine the length of the match statement
+* sue asdl_seq_GET to access the individual test and return
+   
 
 Note on pypy grammer
 =====================
