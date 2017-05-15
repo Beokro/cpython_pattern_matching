@@ -2,6 +2,11 @@ def match( pattern, to_match ):
     typeObject = type( int )
     if type( pattern ) == typeObject and type( to_match ) != typeObject:
         matching = TypeToValue( pattern )
+    elif type( to_match ) == typeObject and type( pattern ) != typeObject:
+        matching = TypeToValue( to_match )
+        to_match = pattern
+    elif type( pattern ) == list:
+        matching = ListToList( pattern )
     else:
         # take care of basetype and value
         matching = ValueToValue( pattern )
@@ -28,3 +33,17 @@ class TypeToValue( MatchPattern ):
     def match( self, to_match ):
         return isinstance( to_match, self.pattern )
 
+class ListToList( MatchPattern ):
+    # match a list to another list
+    def __init__( self, pattern ):
+        self.pattern = pattern
+        assert( type( self.pattern ) == list )
+    def match( self, to_match ):
+        if type( to_match ) != list:
+            return False
+        if len( self.pattern ) != len( to_match ):
+            return False
+        for i in range ( len( self.pattern ) ):
+            if not match( self.pattern[ i ], to_match[ i ] ):
+                return False
+        return True
