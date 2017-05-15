@@ -65,6 +65,24 @@ assert( not match( [ [ str, str ] ], [ [ 1, ' ' ] ] ) )
 assert( not match( [ [ str, bool ], str ], [ [ ' ', True ], 1 ] ) )
 assert( not match( [ [] ], [  ] ) )
 
+# tuple to tuple
+assert( match( ( 1, 2, 3 ), ( 1, 2, 3 ) ) )
+assert( match( ( int, int, str ), ( 1, 123, 'haha' )  ) )
+assert( match( ( int, 1, str ), ( 123, 1, 'asdsa' ) ) )
+assert( match( ( str, 'haha', 'lala' ), ( ' ', 'haha', 'lala' ) ) )
+assert( match( ( ( str, str ), str ), ( ( 'haha', 'lol' ), 'olo' ) ) )
+assert( match( ( bool, ( int, bool ), bool ), ( True, ( 1, False ), True ) ) )
+assert( match( ( ( ( ( str )))), ( ( ( ( ' ' )))) )  )
+assert( match( (), () ) )
+
+assert( not match( ( 1, 2, 3 ), ( 1, 2 ) ) )
+assert( not match( ( str, int, int ), ( 3, ' ', 4 ) ) )
+assert( not match( ( int, int, int, str ), ( 1, 1, 1, 1 ) ) )
+assert( not match( ( bool, int, str, int ), ( True, 3, ' ', () ) ) )
+assert( not match( ( ( str, str ) ), ( ( 1, ' ' ) ) ) )
+assert( not match( ( ( str, bool ), str ), ( ( ' ', True ), 1 ) ) )
+assert( not match( ( [] ), ()  ) )
+
 class Person:
     def __init__( self ):
         self.ID = 0
