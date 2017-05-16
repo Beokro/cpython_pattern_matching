@@ -83,6 +83,26 @@ assert( not match( ( ( str, str ) ), ( ( 1, ' ' ) ) ) )
 assert( not match( ( ( str, bool ), str ), ( ( ' ', True ), 1 ) ) )
 assert( not match( ( [] ), ()  ) )
 
+
+# dict to dict
+assert( match( { 'a' : 1, 'b' : 2 }, { 'a' : 1, 'b' : 2 } ) )
+assert( match( { 'a' : 1, 'b' : 2 }, { 'a' : 1, 'b' : 2, 'c': 3 } ) )
+assert( match( {}, { 'a' : 1 } ) )
+assert( match( { 'lala' : 'haha' }, { 'lala' : 'haha' } ) )
+assert( match( { 1 : 2, 3 : 4 }, { 3 : 4, 1 : 2 } ) )
+assert( match( { 1 : [ int, int ] }, { 1 : [ 2, 3 ] } ) )
+
+
+assert( not match( { 'a' : 1, 'b' : 2, 'c' : 3 }, { 'a' : 1, 'b' : 2 } ) )
+assert( not match( { 'a' : 2, 'b' : 2 }, { 'a' : 1, 'b' : 2, 'c' : 3 } ) )
+assert( not match( { 1 : 2 }, {} ) )
+assert( not match( { 11 : 2 }, { 1 : 2 } ) )
+assert( not match( { 111 : [ int, int ] }, { 111 : [ 1, '1' ] } ) )
+assert( not match( { 123 : int }, { 123 : [ 1 ] } ) )
+assert( not match( { 'haha' : "lala" }, { 'lala' : 'haha' } ) )
+
+
+
 class Person:
     def __init__( self ):
         self.ID = 0
