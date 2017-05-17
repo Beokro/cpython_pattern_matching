@@ -125,13 +125,34 @@ assert( not match( test2, [ 1, 'lala' ] ) )
 assert( not match( test3, 'what is up' ) )
 assert( not match( lambda x: x > 100, 99 ) )
 
+# match a self define class
 class Person:
     def __init__( self ):
         self.ID = 0
         self.name = ' '
 
-student = Person()
+class Student( Person ):
+    def __init__( self ):
+        self.studentID = 1
 
-assert( match( obj( [ Person ] ), student ) )
+class Police( Person ):
+    def __init__( self ):
+        self.policeID = 2
 
+person_a = Person()
+student_a = Student()
+police_a = Police()
+
+assert( match( obj( [ Person ] ), person_a ) )
+assert( match( obj( [ Person ] ), student_a ) )
+assert( match( obj( [ Student ] ), student_a ) )
+assert( match( obj( [ Police ] ), police_a ) )
+assert( match( obj( [ Person, 'policeID' ] ), police_a ) )
+assert( match( obj( [ Person, 'studentID' ] ), student_a ) )
+
+assert( not match( obj( [ Student ] ), person_a ) )
+assert( not match( obj( [ Student ] ), police_a ) )
+assert( not match( obj( [ Police ] ), person_a ) )
+assert( not match( obj( [ Person, 'studentID' ] ), person_a ) )
+assert( not match( obj( [ Person, 'policeID' ] ), person_a ) )
 print 'test passed'
