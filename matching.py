@@ -9,6 +9,10 @@ def match( pattern, to_match ):
         matching = ListOrTuple( pattern )
     elif type( pattern ) == dict:
         matching = DictToDict( pattern )
+    elif type( pattern ) == type( match ):
+        matching = FunToValue( pattern )
+    elif isinstance( pattern, obj ):
+        matching = ClassToInstance( pattern )
     else:
         # take care of basetype and value
         matching = ValueToValue( pattern )
@@ -21,6 +25,14 @@ class MatchPattern():
     # base class, all class inherit it need to
     # implement match( pattern, to_match ) method
     pass
+
+class obj():
+    # place holder for a list, used to match a class
+    # for example obj( [ Person, 'ID', 'name' ] ) means the object
+    # should have variable ID and name to match it, object must be
+    # a instance of Person
+    def __init__( self, myList ):
+        self.myList = myList
 
 class ValueToValue( MatchPattern ):
     # both pattern and to_match is value
@@ -71,3 +83,31 @@ class DictToDict( MatchPattern ):
                 return False
         return True
 
+class FunToValue( MatchPattern ):
+    # pattern is a function, match if function return True
+    def __init__( self, pattern ):
+        self.pattern = pattern
+
+    def match( self, to_match ):
+        return self.pattern( to_match )
+
+
+class ClassToInstance( MatchPattern ):
+    def __init__( self, pattern ):
+        assert( isinstance( pattern, obj ) )
+        self.pattern = pattern.myList
+
+    def match( self, to_match ):
+        if len( self.pattern ) == 0:
+            return True
+        checkIndex = 0
+        # if object has a type limit, check if to_match is the
+        # instance of that certain type
+        if type( self.pattern[ 0 ] ) == type( MatchPattern ):
+            checkIndex = 1
+            if not isinstance( to_match, self.pattern[ 0 ] ):
+                return False
+        for i in range( checkIndex, len( self.pattern ) ):
+            if not hasattr( to_match, self.pattern[ i ] ):
+                return False
+        return True
