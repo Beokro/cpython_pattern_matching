@@ -1,4 +1,4 @@
-from matching import match, obj, _
+from matching import match, obj, _, com
 # test on base type int, str, tuple, list, bool
 
 
@@ -133,11 +133,13 @@ class Person:
 
 class Student( Person ):
     def __init__( self ):
+        Person.__init__( self )
         self.studentID = 1
         self.units = 0
 
 class Police( Person ):
     def __init__( self ):
+        Person.__init__( self )
         self.policeID = 2
 
 person_a = Person()
@@ -169,5 +171,18 @@ assert( match( _, ( 1, 2, 3 ) ) )
 assert( match( _, ( 1, 123, 'haha' )  ) )
 assert( match( _, [ 123, 1, 'asdsa' ] ) )
 assert( match( _, [ ' ', 'haha', 'lala' ] ) )
+
+# match combination
+assert( match( com( int, lambda x: x > 100 ), 101 ) )
+assert( match( com( obj( Person, 'policeID' ), lambda x: x.ID == 0 ), police_a ) )
+assert( match( com( { 'a' : 1, 'b' : 2 }, lambda x: x[ 'a' ] == 1 ), { 'a' : 1, 'b' : 2 } ) )
+assert( match( com( 1, int ), 1 ) )
+assert( match( com( [ 1, 2, 3 ], lambda x: len( x ) == 3 ), [ 1, 2, 3 ] ) )
+
+assert( not match( com( int, lambda x: x < 100 ), 101 ) )
+assert( not match( com( obj( Person, 'policeID' ), lambda x: x.ID == 3 ), police_a ) )
+assert( not match( com( { 'a' : 1, 'b' : 2 }, lambda x: x[ 'a' ] == 5 ), { 'a' : 1, 'b' : 2 } ) )
+assert( not match( com( 1, int ), '1' ) )
+assert( not match( com( [ 1, 2, 3 ], lambda x: len( x ) == 5 ), [ 1, 2, 3 ] ) )
 
 print 'test passed'

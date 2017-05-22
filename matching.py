@@ -11,20 +11,25 @@ class MatchPattern():
 
 class obj():
     # place holder for a list, used to match a class
-    # for example obj( [ Person, 'ID', 'name' ] ) means the object
-    # should have variable ID and name to match it, object must be
-    # a instance of Person
+    # for example obj( Person, 'ID', name = 'me' ) means the object
+    # should have variable ID and name, name must be 'me'
+    # to match it, object must be a instance of Person
     def __init__( self, *args, **kwargs ):
         self.args = args
         self.kwargs = kwargs
 
+class com():
+    # in order to match sum, to_match must match all of the pattern
+    # included in sum
+    def __init__( self, *args ):
+        self.args = args
 
 _ = AllObject()
 def match( pattern, to_match ):
     typeObject = type( int )
     if isinstance( pattern, AllObject ):
         return True
-    
+
     if type( pattern ) == typeObject and type( to_match ) != typeObject:
         matching = TypeToValue( pattern )
     elif type( to_match ) == typeObject and type( pattern ) != typeObject:
@@ -38,6 +43,8 @@ def match( pattern, to_match ):
         matching = FunToValue( pattern )
     elif isinstance( pattern, obj ):
         matching = ClassToInstance( pattern )
+    elif isinstance( pattern, com ):
+        matching = CombinationToInstance( pattern )
     else:
         # take care of basetype and value
         matching = ValueToValue( pattern )
@@ -127,5 +134,16 @@ class ClassToInstance( MatchPattern ):
             if not hasattr( to_match, attr ):
                 return False
             if not match( value, getattr( to_match, attr ) ):
+                return False
+        return True
+
+class CombinationToInstance( MatchPattern ):
+    def __init__( self, pattern ):
+        assert( isinstance( pattern, com ) )
+        self.patterns = pattern.args
+
+    def match( self, to_match ):
+        for pattern in self.patterns:
+            if not match( pattern, to_match ):
                 return False
         return True
