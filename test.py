@@ -1,4 +1,4 @@
-from matching import match, obj
+from matching import match, obj, _
 # test on base type int, str, tuple, list, bool
 
 
@@ -134,6 +134,7 @@ class Person:
 class Student( Person ):
     def __init__( self ):
         self.studentID = 1
+        self.units = 0
 
 class Police( Person ):
     def __init__( self ):
@@ -141,18 +142,32 @@ class Police( Person ):
 
 person_a = Person()
 student_a = Student()
+student_a.studentID = 2
 police_a = Police()
 
-assert( match( obj( [ Person ] ), person_a ) )
-assert( match( obj( [ Person ] ), student_a ) )
-assert( match( obj( [ Student ] ), student_a ) )
-assert( match( obj( [ Police ] ), police_a ) )
-assert( match( obj( [ Person, 'policeID' ] ), police_a ) )
-assert( match( obj( [ Person, 'studentID' ] ), student_a ) )
+assert( match( obj( Person ), person_a ) )
+assert( match( obj( Person ), student_a ) )
+assert( match( obj( Student ), student_a ) )
+assert( match( obj( Police ), police_a ) )
+assert( match( obj( Person, 'policeID' ), police_a ) )
+assert( match( obj( Person, 'studentID' ), student_a ) )
+assert( match( obj( Person, studentID = 2 ), student_a ) )
+assert( match( obj( Person, studentID = 2, units = 0 ), student_a ) )
 
-assert( not match( obj( [ Student ] ), person_a ) )
-assert( not match( obj( [ Student ] ), police_a ) )
-assert( not match( obj( [ Police ] ), person_a ) )
-assert( not match( obj( [ Person, 'studentID' ] ), person_a ) )
-assert( not match( obj( [ Person, 'policeID' ] ), person_a ) )
+assert( not match( obj( Student ), person_a ) )
+assert( not match( obj( Student ), police_a ) )
+assert( not match( obj( Police ), person_a ) )
+assert( not match( obj( Person, 'studentID' ), person_a ) )
+assert( not match( obj( Person, 'policeID' ), person_a ) )
+assert( not match( obj( Person, studentID = 3 ), student_a ) )
+assert( not match( obj( Person, studentID = 2, units = 5 ), student_a ) )
+
+
+# match _, always true
+assert( match( _, person_a ) )
+assert( match( _, ( 1, 2, 3 ) ) )
+assert( match( _, ( 1, 123, 'haha' )  ) )
+assert( match( _, [ 123, 1, 'asdsa' ] ) )
+assert( match( _, [ ' ', 'haha', 'lala' ] ) )
+
 print 'test passed'
