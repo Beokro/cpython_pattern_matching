@@ -1,5 +1,6 @@
-# can be modified by user
+# important variable used in mat and case
 to_match_object = None
+match_success = True
 
 # class for match
 class AllObject():
@@ -31,15 +32,19 @@ class match_wrap:
     # create a simple context managers for with statement
     # save the match_target of outer scope if it already exist
     def __enter__( self ):
+        global match_success
+        match_success = False
         return self
 
     def __exit__( self, *args ):
         global to_match_object
+        global match_success
         # restore the previous match name on exist
         if self.previous_match_target != None:
             to_match_object = self.previous_match_target
         else:
             to_match_object = None
+        match_success = True
 
     def __init__( self, match_target ):
         global to_match_object
@@ -58,7 +63,13 @@ def mat( match_target ):
     return match_wrap( match_target )
 
 def case( pattern ):
-    return match( pattern, to_match_object )
+    global match_success
+    # if previous match already success, quit
+    if match_success or not match( pattern, to_match_object ):
+        return False
+    else:
+        match_success = True
+        return True
 
 def match( pattern, to_match ):
     typeObject = type( int )

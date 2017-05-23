@@ -187,12 +187,17 @@ assert( not match( com( { 'a' : 1, 'b' : 2 }, lambda x: x[ 'a' ] == 5 ), { 'a' :
 assert( not match( com( 1, int ), '1' ) )
 assert( not match( com( [ 1, 2, 3 ], lambda x: len( x ) == 5 ), [ 1, 2, 3 ] ) )
 
-print 'test passed'
 
-with mat( 5 ):
-    if case( int ):
-        print 'match success'
-    if case( 5 ):
-        print 'also success'
-    if case( 4 ):
-        print 'failed'
+def match_number( num ):
+    counter = 0
+    with mat( 5 ):
+        if case( int ):
+            counter += 1
+        if case( 5 ):
+            counter += 2
+        if case( 4 ):
+            counter += 4
+    return counter
+
+assert( match_number( 5 ) == 1 )
+print 'test passed'
