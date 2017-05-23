@@ -1,4 +1,4 @@
-from matching import match, obj, _, com, mat, case
+from matching import match, obj, _, com, mat, case, UnmatchError
 import matching
 import sys
 # test on base type int, str, tuple, list, bool
@@ -190,14 +190,39 @@ assert( not match( com( [ 1, 2, 3 ], lambda x: len( x ) == 5 ), [ 1, 2, 3 ] ) )
 
 def match_number( num ):
     counter = 0
-    with mat( 5 ):
+    with mat( num ):
         if case( int ):
             counter += 1
         if case( 5 ):
             counter += 2
         if case( 4 ):
             counter += 4
+        if case( _ ):
+            counter += 8
     return counter
 
+def match_Person( p ):
+    with mat( p ):
+        if case( obj( Police ) ):
+            return 'police'
+        if case( obj( Student ) ):
+            return 'student'
+        if case( obj( Person ) ):
+            return 'person'
+
+
 assert( match_number( 5 ) == 1 )
+assert( match_number( 'haha' ) == 8 )
+assert( match_Person( person_a ) == 'person' )
+assert( match_Person( student_a ) == 'student' )
+assert( match_Person( police_a ) == 'police' )
+
+# test ablt pattern_match will throw a exception if nothing match
+unmatch = False
+try:
+    match_Person( 1 )
+except UnmatchError as e:
+    unmatch = True
+assert( unmatch )
+
 print 'test passed'

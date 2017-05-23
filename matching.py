@@ -28,6 +28,9 @@ class com():
     def __init__( self, *args ):
         self.args = args
 
+class UnmatchError( Exception ):
+    pass
+
 class match_wrap:
     # create a simple context managers for with statement
     # save the match_target of outer scope if it already exist
@@ -44,6 +47,9 @@ class match_wrap:
             to_match_object = self.previous_match_target
         else:
             to_match_object = None
+        if not match_success:
+            match_success = True
+            raise UnmatchError
         match_success = True
 
     def __init__( self, match_target ):
