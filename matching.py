@@ -1,4 +1,7 @@
-# match set
+# can be modified by user
+to_match_object = None
+
+# class for match
 class AllObject():
     # a place holder, AllObject match everything
     def __init__( self ):
@@ -19,12 +22,44 @@ class obj():
         self.kwargs = kwargs
 
 class com():
-    # in order to match sum, to_match must match all of the pattern
+    # in order to match com( combination ), to_match must match all of the pattern
     # included in sum
     def __init__( self, *args ):
         self.args = args
 
+class match_wrap:
+    # create a simple context managers for with statement
+    # save the match_target of outer scope if it already exist
+    def __enter__( self ):
+        return self
+
+    def __exit__( self, *args ):
+        global to_match_object
+        # restore the previous match name on exist
+        if self.previous_match_target != None:
+            to_match_object = self.previous_match_target
+        else:
+            to_match_object = None
+
+    def __init__( self, match_target ):
+        global to_match_object
+        if to_match_object != None:
+            self.previous_match_target = caller.f_locals[ to_match_name ]
+        else:
+            self.previous_match_target = None
+        to_match_object = match_target
+
+# _ can be used to match all objects
 _ = AllObject()
+
+
+def mat( match_target ):
+    # just a wraper for match target
+    return match_wrap( match_target )
+
+def case( pattern ):
+    return match( pattern, to_match_object )
+
 def match( pattern, to_match ):
     typeObject = type( int )
     if isinstance( pattern, AllObject ):

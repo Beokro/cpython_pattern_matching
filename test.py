@@ -1,4 +1,6 @@
-from matching import match, obj, _, com
+from matching import match, obj, _, com, mat, case
+import matching
+import sys
 # test on base type int, str, tuple, list, bool
 
 
@@ -186,3 +188,11 @@ assert( not match( com( 1, int ), '1' ) )
 assert( not match( com( [ 1, 2, 3 ], lambda x: len( x ) == 5 ), [ 1, 2, 3 ] ) )
 
 print 'test passed'
+
+with mat( 5 ):
+    if case( int ):
+        print 'match success'
+    if case( 5 ):
+        print 'also success'
+    if case( 4 ):
+        print 'failed'
