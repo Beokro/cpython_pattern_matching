@@ -11,9 +11,12 @@ This project is intended to build a pattern matching for python.
       count += 2
     if case( list ):
       count += 4
+      
   assert( count == 1 )
   </pre>
-
+* pattern matching will throw a exception if no pattern matched for the target
+* pattern matching will stop at first matched and exit the match
+* pattern matching does not support multi threads but recurssion is fine
 ## back end match function
 * match actual value
   <pre>
@@ -71,4 +74,10 @@ This project is intended to build a pattern matching for python.
   <pre>
   match( com( int, lambda x: x > 100 ), 101 ) = True
   match( com( [ 1, 2, 3 ], lambda x: len( x ) == 5 ), [ 1, 2, 3 ] ) = False
+  </pre>
+* match _ ( always True )
+  <pre>
+  match( _, 'haha' ) = True
+  match( _, 1234 ) = True
+  match( _, [ 1234, 'haha' ] ) = True
   </pre>
