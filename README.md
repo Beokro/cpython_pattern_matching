@@ -1,6 +1,18 @@
 # cpython_pattern_matching
+This project is intended to build a pattern matching for python.
 
-Tried to add a new keyword to cpython lanuage but that didn't work out. Now try to write a library for pattern matching instead of changing the lanuage itslef
+## Basic Syntax
+  <pre>
+  count = 0
+  with mat( 5 ):
+    if case( int ):
+      count += 1
+    if case( 5 ):
+      count += 2
+    if case( list ):
+      count += 4
+  assert( count == 1 )
+  </pre>
 
 ## back end match function
 * match actual value
