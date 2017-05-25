@@ -1,5 +1,6 @@
-from matching import match, obj, _, com, mat, case, UnmatchError
+from matching import match, obj, _, com, mat, case, UnmatchError, _x, _xs
 import matching
+import inspect
 import sys
 # test on base type int, str, tuple, list, bool
 
@@ -210,7 +211,6 @@ def match_Person( p ):
         if case( obj( Person ) ):
             return 'person'
 
-
 assert( match_number( 5 ) == 1 )
 assert( match_number( 'haha' ) == 8 )
 assert( match_Person( person_a ) == 'person' )
@@ -223,6 +223,26 @@ try:
     match_Person( 1 )
 except UnmatchError as e:
     unmatch = True
-assert( unmatch )
+# assert( unmatch )
+
+
+# test on match class with undeclare variable
+class Con( object ):
+    def __init__( self, xx, xxs ):
+        # x is a number and xs is a Con
+        self.x = xx
+        self.xs = xxs
+
+def match_Con( con ):
+    with mat( con ):
+        if case( Con( _x, _xs ) ):
+            return _x[0]
+        if case( _ ):
+            print '...'
+            return None
+
+con = Con( 100, 2 )
+ccc = Con( 100, 2 )
+assert( match_Con( Con( 100, 2 ) ) == 100 )
 
 print 'test passed'

@@ -1,6 +1,18 @@
+import inspect
 # important variable used in mat and case
 to_match_object = None
 match_success = True
+_x = [ '_x_place_holder' ]
+_xs = [ '_xs_place_holder' ]
+_y = [ '_y_place_holder' ]
+_z = [ '_z_place_holder' ]
+_a = [ '_a_place_holder' ]
+_b = [ '_b_place_holder' ]
+_c = [ '_c_place_holder' ]
+_d = [ '_d_place_holder' ]
+_e = [ '_e_place_holder' ]
+_f = [ '_f_place_holder' ]
+_g = [ '_g_place_holder' ]
 
 # class for match
 class AllObject():
@@ -49,7 +61,7 @@ class match_wrap:
             to_match_object = None
         if not match_success:
             match_success = True
-            raise UnmatchError
+            # raise UnmatchError
         match_success = True
 
     def __init__( self, match_target ):
@@ -79,19 +91,22 @@ def case( pattern ):
 
 def match( pattern, to_match ):
     typeObject = type( int )
+    patternType = type( pattern )
     if isinstance( pattern, AllObject ):
         return True
 
-    if type( pattern ) == typeObject and type( to_match ) != typeObject:
+    if patternType == typeObject and type( to_match ) != typeObject:
         matching = TypeToValue( pattern )
-    elif type( to_match ) == typeObject and type( pattern ) != typeObject:
+    elif type( to_match ) == typeObject and patternType != typeObject:
         matching = TypeToValue( to_match )
         to_match = pattern
-    elif type( pattern ) == list or type( pattern ) == tuple :
+    elif len( str( patternType ) ) > 6 and str( patternType )[ 1 : 6 ] == 'class':
+        matching = instanceAsPattern( pattern )
+    elif patternType == list or patternType == tuple :
         matching = ListOrTuple( pattern )
-    elif type( pattern ) == dict:
+    elif patternType == dict:
         matching = DictToDict( pattern )
-    elif type( pattern ) == type( match ):
+    elif patternType == type( match ):
         matching = FunToValue( pattern )
     elif isinstance( pattern, obj ):
         matching = ClassToInstance( pattern )
@@ -197,5 +212,52 @@ class CombinationToInstance( MatchPattern ):
     def match( self, to_match ):
         for pattern in self.patterns:
             if not match( pattern, to_match ):
+                return False
+        return True
+
+def instanceHelper( pattern, key, to_match ):
+    attr = getattr( pattern, key )
+    newAttr = getattr( to_match, key )
+    # if pattern's attr is one of the holder, replace it with real value
+    # otherwise do a mtach
+    if attr == [ '_x_place_holder' ]:
+        _x[ 0 ] = newAttr
+    elif attr == [ '_xs_place_holder' ]:
+        _xs[ 0 ] = newAttr
+    elif attr == [ '_y_place_holder' ]:
+        _y[ 0 ] = newAttr
+    elif attr == [ '_z_place_holder' ]:
+        _z[ 0 ] = newAttr
+    elif attr == [ '_a_place_holder' ]:
+        _a[ 0 ] = newAttr
+    elif attr == [ '_b_place_holder' ]:
+        _b[ 0 ] = newAttr
+    elif attr == [ '_c_place_holder' ]:
+        _c[ 0 ] = newAttr
+    elif attr == [ '_d_place_holder' ]:
+        _d[ 0 ] = newAttr
+    elif attr == [ '_e_place_holder' ]:
+        _e[ 0 ] = newAttr
+    elif attr == [ '_f_place_holder' ]:
+        _f[ 0 ] = newAttr
+    elif attr == [ '_g_place_holder' ]:
+        _g[ 0 ] = newAttr
+    else:
+        return match( attr, newAttr )
+    return True
+
+
+
+class instanceAsPattern( MatchPattern ):
+    def __init__( self, pattern ):
+        self.pattern = pattern
+
+    def match( self, to_match ):
+        if not isinstance( to_match, type( self.pattern ) ):
+            return False
+        # use pattern to find out which variable is used
+        attrs = self.pattern.__dict__.keys()
+        for i in range ( 0, len( attrs ) ):
+            if not instanceHelper( self.pattern, attrs[ i ], to_match ):
                 return False
         return True
