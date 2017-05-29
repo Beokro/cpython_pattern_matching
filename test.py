@@ -223,7 +223,20 @@ try:
     match_Person( 1 )
 except UnmatchError as e:
     unmatch = True
-# assert( unmatch )
+assert( unmatch )
+
+
+# test on recurssion
+def match_recur( num ):
+    with mat( num ):
+        if case( 0 ):
+            return 0
+        if case( com( int, lambda x: x > 0 ) ):
+            return num + match_recur( num - 1 )
+        if case( _ ):
+            print 'recurssion matched failed'
+
+assert( match_recur( 4 ) == 10 )
 
 
 # test on match class with undeclare variable
@@ -241,8 +254,17 @@ def match_Con( con ):
             print '...'
             return None
 
-con = Con( 100, 2 )
-ccc = Con( 100, 2 )
+def sum( con ):
+    with mat( con ):
+        if case( Con( _x, None ) ):
+            return _x[ 0 ]
+        if case( Con( _x, _xs ) ):
+            return _x[ 0 ] + sum( _xs[ 0 ] )
+        if case( _ ):
+            print 'does not match with anything'
+            return 0
+
 assert( match_Con( Con( 100, 2 ) ) == 100 )
+assert( sum( Con( 1, Con( 2, Con( 3, None ) ) ) ) == 6 )
 
 print 'test passed'

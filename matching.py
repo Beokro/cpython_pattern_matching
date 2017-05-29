@@ -14,6 +14,20 @@ _e = [ '_e_place_holder' ]
 _f = [ '_f_place_holder' ]
 _g = [ '_g_place_holder' ]
 
+def resetAllGlobal():
+    _x[ 0 ] = '_x_place_holder'
+    _xs[ 0 ] = '_xs_place_holder'
+    _y[ 0 ] = '_y_place_holder'
+    _z[ 0 ] = '_z_place_holder'
+    _a[ 0 ] = '_a_place_holder'
+    _b[ 0 ] = '_b_place_holder'
+    _c[ 0 ] = '_c_place_holder'
+    _d[ 0 ] = '_d_place_holder'
+    _e[ 0 ] = '_e_place_holder'
+    _f[ 0 ] = '_f_place_holder'
+    _g[ 0 ] = '_g_place_holder'
+
+
 # class for match
 class AllObject():
     # a place holder, AllObject match everything
@@ -54,22 +68,41 @@ class match_wrap:
     def __exit__( self, *args ):
         global to_match_object
         global match_success
+        global _x, _xs, _y, _z, _a, _b, _c, _d, _e, _f, _g
         # restore the previous match name on exist
-        if self.previous_match_target != None:
-            to_match_object = self.previous_match_target
-        else:
-            to_match_object = None
+        to_match_object = self.previous_match_target
+        _x[ 0 ] = self._x
+        _xs[ 0 ] = self._xs
+        _y[ 0 ] = self._y
+        _z[ 0 ] = self._z
+        _a[ 0 ] = self._a
+        _b[ 0 ] = self._b
+        _c[ 0 ] = self._c
+        _d[ 0 ] = self._d
+        _e[ 0 ] = self._e
+        _f[ 0 ] = self._f
+        _g[ 0 ] = self._g
         if not match_success:
             match_success = True
-            # raise UnmatchError
+            raise UnmatchError
         match_success = True
 
     def __init__( self, match_target ):
         global to_match_object
-        if to_match_object != None:
-            self.previous_match_target = caller.f_locals[ to_match_name ]
-        else:
-            self.previous_match_target = None
+        global _x, _xs, _y, _z, _a, _b, _c, _d, _e, _f, _g
+        self.previous_match_target = to_match_object
+        self._x = _x[ 0 ]
+        self._xs = _xs[ 0 ]
+        self._y = _y[ 0 ]
+        self._z = _z[ 0 ]
+        self._a = _a[ 0 ]
+        self._b = _b[ 0 ]
+        self._c = _c[ 0 ]
+        self._d = _d[ 0 ]
+        self._e = _e[ 0 ]
+        self._f = _f[ 0 ]
+        self._g = _g[ 0 ]
+        resetAllGlobal()
         to_match_object = match_target
 
 # _ can be used to match all objects
@@ -82,6 +115,7 @@ def mat( match_target ):
 
 def case( pattern ):
     global match_success
+    resetAllGlobal()
     # if previous match already success, quit
     if match_success or not match( pattern, to_match_object ):
         return False
