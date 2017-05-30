@@ -27,6 +27,9 @@ def resetAllGlobal():
     _f[ 0 ] = '_f_place_holder'
     _g[ 0 ] = '_g_place_holder'
 
+def isGlobal( val ):
+    return val == _x or val == _xs or val == _y or val == _z or val == _a  or\
+        val == _b or val == _c or val == _d or val == _e or val == _f or val == _g 
 
 # class for match
 class AllObject():
@@ -129,7 +132,9 @@ def match( pattern, to_match ):
     if isinstance( pattern, AllObject ):
         return True
 
-    if patternType == typeObject and type( to_match ) != typeObject:
+    if isGlobal( pattern ):
+        matching = GlobalToAll( pattern )
+    elif patternType == typeObject and type( to_match ) != typeObject:
         matching = TypeToValue( pattern )
     elif type( to_match ) == typeObject and patternType != typeObject:
         matching = TypeToValue( to_match )
@@ -252,6 +257,9 @@ class CombinationToInstance( MatchPattern ):
 def instanceHelper( pattern, key, to_match ):
     attr = getattr( pattern, key )
     newAttr = getattr( to_match, key )
+    return replaceGlobal( attr, newAttr )
+
+def replaceGlobal( attr, newAttr ):
     # if pattern's attr is one of the holder, replace it with real value
     # otherwise do a mtach
     if attr == [ '_x_place_holder' ]:
@@ -295,3 +303,10 @@ class instanceAsPattern( MatchPattern ):
             if not instanceHelper( self.pattern, attrs[ i ], to_match ):
                 return False
         return True
+
+class GlobalToAll( MatchPattern ):
+    def __init__( self, pattern ):
+        self.pattern = pattern
+
+    def match( self, to_match ):
+        return replaceGlobal( self.pattern, to_match )

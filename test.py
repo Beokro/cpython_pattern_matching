@@ -1,4 +1,4 @@
-from matching import match, obj, _, com, mat, case, UnmatchError, _x, _xs
+from matching import match, obj, _, com, mat, case, UnmatchError, _x, _xs, isGlobal
 import matching
 import inspect
 import sys
@@ -267,4 +267,17 @@ def sum( con ):
 assert( match_Con( Con( 100, 2 ) ) == 100 )
 assert( sum( Con( 1, Con( 2, Con( 3, None ) ) ) ) == 6 )
 
+# test on single match and assign
+def matchAndAssign( val ):
+    with mat( val ):
+        if case( int ):
+            return 1
+        if case( str ):
+            return 2
+        if case( _x ):
+            return _x[ 0 ]
+
+assert( matchAndAssign( 1 ) == 1 )
+assert( matchAndAssign( 'haha' ) == 2 )
+assert( matchAndAssign( ( 1, 2 ) ) == ( 1, 2 ) )
 print 'test passed'
