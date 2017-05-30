@@ -17,6 +17,31 @@ This project is intended to build a pattern matching for python.
 * pattern matching will throw a exception if no pattern matched for the target
 * pattern matching will stop at first matched and exit the match
 * pattern matching does not support multi threads but recurssion is fine
+
+## Match And Assign
+  <pre>
+  class Con( object ):
+    def __init__( self, xx, xxs ):
+        # x is a number and xs is a Con
+        self.x = xx
+        self.xs = xxs
+
+  def sum( con ):
+    with mat( con ):
+        if case( Con( _x, None ) ):
+            return _x[ 0 ]
+        if case( Con( _x, _xs ) ):
+            return _x[ 0 ] + sum( _xs[ 0 ] )
+        if case( _ ):
+            print 'does not match with anything'
+            return 0
+            
+  assert( sum( Con( 1, Con( 2, Con( 3, None ) ) ) ) == 6 )
+  </pre>
+
+* If you want to use Match and Assign, you have to use one of the pre defined var name including _x, _xs, _y, _z, _a, _b, _c, _d, _e, _f, _g
+* Instead of use the variable directly, you have to add [ 0 ] after the variable to access the object/val you want
+
 ## back end match function
 * match actual value
   <pre>
