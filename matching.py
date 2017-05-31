@@ -126,6 +126,14 @@ def case( pattern ):
         match_success = True
         return True
 
+def cond( *args ):
+    global match_success
+    for arg in args:
+        if not arg:
+            match_success = False
+            return False
+    return True
+
 def match( pattern, to_match ):
     typeObject = type( int )
     patternType = type( pattern )

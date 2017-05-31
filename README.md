@@ -40,6 +40,7 @@ This project is intended to build a pattern matching for python.
   </pre>
 
 * If you want to use Match and Assign, you have to use one of the pre defined var name including _x, _xs, _y, _z, _a, _b, _c, _d, _e, _f, _g
+* The class you trying to match must inherit from object class
 * Instead of use the variable directly, you have to add [ 0 ] after the variable to access the object/val you want
 
 ## back end match function

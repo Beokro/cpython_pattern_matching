@@ -1,4 +1,4 @@
-from matching import match, obj, _, com, mat, case, UnmatchError, _x, _xs, isGlobal
+from matching import match, obj, _, com, mat, case, UnmatchError, _x, _xs, isGlobal, cond
 import matching
 import inspect
 import sys
@@ -280,4 +280,21 @@ def matchAndAssign( val ):
 assert( matchAndAssign( 1 ) == 1 )
 assert( matchAndAssign( 'haha' ) == 2 )
 assert( matchAndAssign( ( 1, 2 ) ) == ( 1, 2 ) )
+
+
+# test on match and assign with condition
+
+def matchAndAssignCond( val ):
+    with mat( val ):
+        if case( Con( _x, _xs ) ) and cond( _x[ 0 ] > 5, _xs[ 0 ] != None ):
+            return 1
+        if case( Con( _x, _xs ) ) and cond( _x[ 0 ] < 5, _xs[ 0 ] == None ):
+            return 2
+        if case( _ ):
+            return 3
+    return 4
+
+assert( matchAndAssignCond( Con( 0, None ) ) == 2 )
+assert( matchAndAssignCond( Con( 6, None ) ) == 3 )
+assert( matchAndAssignCond( Con( 6, 7 ) ) == 1 )
 print 'test passed'
